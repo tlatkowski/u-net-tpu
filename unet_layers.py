@@ -13,20 +13,29 @@ def encoder(inputs):
       layer_name = "down-layer-{}".format(i)
 
       if i == 0:
-        current_layer_output, conv2 = layers.convolution_down(inputs,
-                                                              NUM_FILTERS[i])
-        encoder_layers[layer_name] = current_layer_output
+        current_encoder_output, conv2 = layers.convolution_down(inputs,
+                                                                NUM_FILTERS[i])
+        encoder_layers[layer_name] = current_encoder_output
         encoder_cache[layer_name] = conv2
       else:
-        previous_layer_output = encoder_layers["down-layer-{}".format(i - 1)]
-        current_layer_output, conv2 = layers.convolution_down(
-          previous_layer_output,
+        previous_encoder_output = encoder_layers["down-layer-{}".format(i - 1)]
+        current_encoder_output, conv2 = layers.convolution_down(
+          previous_encoder_output,
           NUM_FILTERS[i])
-        encoder_layers[layer_name] = current_layer_output
+        encoder_layers[layer_name] = current_encoder_output
         encoder_cache[layer_name] = conv2
   return encoder_layers, encoder_cache
 
 
-def decoder(inputs, contracting_path):
+def decoder(inputs):
+  for i in range(len(inputs)):
+    if i == 0:
+      previous_layer = inputs["down-layer-0"]
+      current_layer = inputs["down-layer-1"]
+      current_decoder_output = layers.convolution_up(previous_layer,
+                                                     current_layer,
+                                                     num_filters=NUM_FILTERS[
+                                                       len(
+                                                         NUM_FILTERS) - 1 - i])
   output = None
   return output

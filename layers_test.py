@@ -6,7 +6,7 @@ import layers
 
 class LayersTest(tf.test.TestCase):
 
-  def testConcatInputsByFiltersDimension(self):
+  def testDepthConcat(self):
     inputs = tf.constant(np.ones(shape=[1, 10, 10, 4]))
     inputs_contracting_path = tf.constant(np.ones(shape=[1, 10, 10, 2]))
     concat_inputs_by_filters = layers.concat_by_depth(inputs,
@@ -50,40 +50,6 @@ class LayersTest(tf.test.TestCase):
     actual_image_dim = conv_down.get_shape().as_list()[1]
     self.assertEqual(expected_image_dim, actual_image_dim)
 
-  def testConvolutionDown(self):
-    raise NotImplementedError
-
-  def testConvolutionUpDefaultFilterSize(self):
-    inputs1 = tf.constant(np.ones(shape=[1, 10, 10, 1]))
-    inputs2 = tf.constant(np.ones(shape=[1, 10, 10, 1]))
-    conv_down = layers.convolution_up(inputs1,
-                                      inputs2,
-                                      num_filters=1,
-                                      filter_size=3,
-                                      strides=[1, 1],
-                                      padding="valid")
-
-    # [(height/width - filter_size + 2 * padding) // stride] + 1
-    expected_image_dim = 8
-    actual_image_dim = conv_down.get_shape().as_list()[1]
-    self.assertEqual(expected_image_dim, actual_image_dim)
-
-  def testConvolutionUp2Strides(self):
-    inputs1 = tf.constant(np.ones(shape=[1, 10, 10, 1]))
-    inputs2 = tf.constant(np.ones(shape=[1, 10, 10, 1]))
-
-    conv_down = layers.convolution_up(inputs1,
-                                      inputs2,
-                                      num_filters=1,
-                                      filter_size=3,
-                                      strides=[2, 2],
-                                      padding="valid")
-
-    # [(height/width - filter_size + 2 * padding) // stride] + 1
-    expected_image_dim = 4
-    actual_image_dim = conv_down.get_shape().as_list()[1]
-    self.assertEqual(expected_image_dim, actual_image_dim)
-
   def testMaxPoolingDefaultValues(self):
     inputs = tf.constant(np.ones(shape=[1, 10, 10, 2]))
 
@@ -97,4 +63,23 @@ class LayersTest(tf.test.TestCase):
     self.assertEqual(expected_image_dim, actual_image_dim)
 
   def testUpScaling2d(self):
-    layers.up_scaling2d()
+    inputs = tf.constant(np.ones(shape=[1, 10, 10, 2]))
+    inputs_upsampled = layers.up_scaling2d(inputs)
+
+    expected_image_dim = 20
+    actual_image_dim = inputs_upsampled.get_shape().as_list()[1]
+    self.assertEqual(expected_image_dim, actual_image_dim)
+
+  def testConvolutionDown(self):
+    raise NotImplementedError
+
+  def testConvolutionUp(self):
+    inputs1 = tf.constant(np.ones(shape=[1, 28, 28, 10]))
+    inputs2 = tf.constant(np.ones(shape=[1, 56, 56, 10]))
+
+    conv_up_output = layers.convolution_up(inputs1, inputs2, num_filters=10)
+    expected_image_dim = 52
+    actual_image_dim = conv_up_output.get_shape().as_list()[1]
+    self.assertEqual(expected_image_dim, actual_image_dim)
+
+

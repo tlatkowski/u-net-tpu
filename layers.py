@@ -11,14 +11,13 @@ def convolution_down(inputs, num_filters, filter_size=3, strides=[1, 1],
 
 def convolution_up(inputs, inputs_contracting_path, num_filters, filter_size=3,
                    strides=[1, 1], padding="valid"):
-  concat_inputs = concat_by_depth(inputs, inputs_contracting_path)
-  return convolution2d(
-    inputs=concat_inputs,
-    num_filters=num_filters,
-    filter_size=filter_size,
-    strides=strides,
-    padding=padding
-  )
+  inputs_upsampled = up_scaling2d(inputs)
+  concat_inputs = concat_by_depth(inputs_upsampled, inputs_contracting_path)
+  conv1 = convolution2d(concat_inputs, num_filters, filter_size, strides,
+                        padding)
+  conv2 = convolution2d(conv1, num_filters, filter_size, strides,
+                        padding)
+  return conv2
 
 
 def convolution2d(inputs, num_filters, filter_size=3, strides=[1, 1],
@@ -48,5 +47,8 @@ def up_pooling2d():
   pass
 
 
-def up_scaling2d():
-  raise NotImplementedError
+def up_scaling2d(inputs):
+  current_size = inputs.get_shape().as_list()[1]
+  return tf.image.resize_nearest_neighbor(inputs,
+                                          size=[2 * current_size,
+                                                2 * current_size])
