@@ -12,7 +12,8 @@ def convolution_down(inputs, num_filters, filter_size=3, strides=[1, 1],
 def convolution_up(inputs, inputs_contracting_path, num_filters, filter_size=3,
                    strides=[1, 1], padding="valid"):
   inputs_upsampled = up_scaling2d(inputs)
-  concat_inputs = concat_by_depth(inputs_upsampled, inputs_contracting_path)
+  inputs_cropped = crop(inputs_contracting_path, inputs_upsampled)
+  concat_inputs = concat_by_depth(inputs_upsampled, inputs_cropped)
   conv1 = convolution2d(concat_inputs, num_filters, filter_size, strides,
                         padding)
   conv2 = convolution2d(conv1, num_filters, filter_size, strides,
@@ -52,3 +53,21 @@ def up_scaling2d(inputs):
   return tf.image.resize_nearest_neighbor(inputs,
                                           size=[2 * current_size,
                                                 2 * current_size])
+
+
+def crop(image_to_crop, target_image):
+  image_to_crop_height = image_to_crop.get_shape().as_list()[1]
+  target_image_height = target_image.get_shape().as_list()[1]
+  offset_height = offset_width = compute_offset(image_to_crop_height,
+                                                target_image_height)
+  crop_height = crop_width = target_image_height
+  return tf.image.crop_to_bounding_box(
+    image=image_to_crop,
+    offset_height=offset_height,
+    offset_width=offset_width,
+    target_height=crop_height,
+    target_width=crop_width
+  )
+
+def compute_offset(dim1, dim2):
+  return int((dim1 - dim2) / 2)

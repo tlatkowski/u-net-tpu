@@ -28,14 +28,23 @@ def encoder(inputs):
 
 
 def decoder(inputs):
-  for i in range(len(inputs)):
-    if i == 0:
-      previous_layer = inputs["down-layer-0"]
-      current_layer = inputs["down-layer-1"]
+  num_layers = len(inputs)
+  current_decoder_output = None
+  for i in reversed(range(1, num_layers)):
+    if i == (num_layers - 1):
+      last_layer_name = "down-layer-{}".format(i)
+      current_layer_name = "down-layer-{}".format(i - 1)
+      previous_layer = inputs[last_layer_name]
+      current_layer = inputs[current_layer_name]
       current_decoder_output = layers.convolution_up(previous_layer,
                                                      current_layer,
-                                                     num_filters=NUM_FILTERS[
-                                                       len(
-                                                         NUM_FILTERS) - 1 - i])
-  output = None
-  return output
+                                                     num_filters=NUM_FILTERS[i])
+    else:
+      layer_name = "down-layer-{}".format(i - 1)
+      encoder_layer = inputs[layer_name]
+      previous_layer = current_decoder_output
+      current_decoder_output = layers.convolution_up(previous_layer,
+                                                     encoder_layer,
+                                                     num_filters=NUM_FILTERS[i])
+
+  return current_decoder_output

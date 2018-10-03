@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-import unet_layers
+from layers import unet_layers
 
 
 class UnetLayersTest(tf.test.TestCase):

@@ -82,4 +82,22 @@ class LayersTest(tf.test.TestCase):
     actual_image_dim = conv_up_output.get_shape().as_list()[1]
     self.assertEqual(expected_image_dim, actual_image_dim)
 
+  def testCrop(self):
+    image_to_crop = tf.constant(np.ones(shape=[1, 64, 64, 10]))
+    target_image = tf.constant(np.ones(shape=[1, 56, 56, 10]))
 
+    cropped_image = layers.crop(image_to_crop, target_image)
+    expected_cropped_image_dim = 56
+    actual_cropped_image_dim = cropped_image.get_shape().as_list()[1]
+    self.assertEqual(expected_cropped_image_dim, actual_cropped_image_dim)
+
+  def testCroppedMatrix(self):
+    image_to_crop = tf.constant(np.arange(16).reshape([1, 4, 4, 1]))
+    target_image = tf.constant(np.ones(shape=[1, 2, 2, 1]))
+
+    cropped_image = layers.crop(image_to_crop, target_image)
+
+    with self.test_session() as session:
+      actual_cropped_image = session.run(cropped_image)
+      expected_cropped_image = np.array([5., 6., 9., 10.]).reshape([1, 2, 2, 1])
+      self.assertAllEqual(expected_cropped_image, actual_cropped_image)
