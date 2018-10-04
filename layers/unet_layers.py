@@ -1,4 +1,4 @@
-import layers
+from layers import common_layers
 import tensorflow as tf
 
 NUM_FILTERS = [64, 128, 256, 512, 1024]
@@ -13,13 +13,14 @@ def encoder(inputs):
       layer_name = "down-layer-{}".format(i)
 
       if i == 0:
-        current_encoder_output, conv2 = layers.convolution_down(inputs,
-                                                                NUM_FILTERS[i])
+        current_encoder_output, conv2 = common_layers.convolution_down(inputs,
+                                                                       NUM_FILTERS[
+                                                                         i])
         encoder_layers[layer_name] = current_encoder_output
         encoder_cache[layer_name] = conv2
       else:
         previous_encoder_output = encoder_layers["down-layer-{}".format(i - 1)]
-        current_encoder_output, conv2 = layers.convolution_down(
+        current_encoder_output, conv2 = common_layers.convolution_down(
           previous_encoder_output,
           NUM_FILTERS[i])
         encoder_layers[layer_name] = current_encoder_output
@@ -30,21 +31,23 @@ def encoder(inputs):
 def decoder(inputs):
   num_layers = len(inputs)
   current_decoder_output = None
-  for i in reversed(range(1, num_layers)):
-    if i == (num_layers - 1):
-      last_layer_name = "down-layer-{}".format(i)
-      current_layer_name = "down-layer-{}".format(i - 1)
-      previous_layer = inputs[last_layer_name]
-      current_layer = inputs[current_layer_name]
-      current_decoder_output = layers.convolution_up(previous_layer,
-                                                     current_layer,
-                                                     num_filters=NUM_FILTERS[i])
-    else:
-      layer_name = "down-layer-{}".format(i - 1)
-      encoder_layer = inputs[layer_name]
-      previous_layer = current_decoder_output
-      current_decoder_output = layers.convolution_up(previous_layer,
-                                                     encoder_layer,
-                                                     num_filters=NUM_FILTERS[i])
+  with tf.variable_scope("decoder"):
+    for i in reversed(range(1, num_layers)):
+      num_filters = NUM_FILTERS[i - 1]
+      if i == (num_layers - 1):
+        last_layer_name = "down-layer-{}".format(i)
+        current_layer_name = "down-layer-{}".format(i - 1)
+        previous_layer = inputs[last_layer_name]
+        current_layer = inputs[current_layer_name]
+        current_decoder_output = common_layers.convolution_up(previous_layer,
+                                                              current_layer,
+                                                              num_filters)
+      else:
+        layer_name = "down-layer-{}".format(i - 1)
+        encoder_layer = inputs[layer_name]
+        previous_layer = current_decoder_output
+        current_decoder_output = common_layers.convolution_up(previous_layer,
+                                                              encoder_layer,
+                                                              num_filters)
 
-  return current_decoder_output
+    return current_decoder_output
