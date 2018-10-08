@@ -57,3 +57,11 @@ def decoder(inputs):
                                                               num_filters)
 
     return current_decoder_output
+
+
+def output_layer(inputs):
+  with tf.variable_scope("output"):
+    output = tf.layers.conv2d(inputs,
+                              filters=2,
+                              kernel_size=1)
+  return output

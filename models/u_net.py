@@ -4,8 +4,9 @@ from layers import unet_layers
 
 
 def create_model(inputs):
-  encoder_outputs = unet_layers.encoder(inputs)
-  return unet_layers.decoder(encoder_outputs)
+  _, encoder_outputs = unet_layers.encoder(inputs)
+  decoder_output = unet_layers.decoder(encoder_outputs)
+  return unet_layers.output_layer(decoder_output)
 
 
 def model_fn(features, labels, mode, params):
