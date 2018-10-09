@@ -2,6 +2,8 @@ import tensorflow as tf
 
 from layers import unet_layers
 
+LEARNING_RATE = 1e-4
+
 
 def create_model(inputs):
   _, encoder_outputs = unet_layers.encoder(inputs)
@@ -11,10 +13,24 @@ def create_model(inputs):
 
 def model_fn(features, labels, mode, params):
   image = features
-  model = create_model(image)
 
   if mode == tf.estimator.ModeKeys.TRAIN:
-    pass
+    optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE)
+    model_output = create_model(image)
+    loss = tf.losses.sparse_softmax_cross_entropy(labels=labels,
+                                                  logits=model_output)
+
+    accuracy = tf.metrics.accuracy(labels=labels,
+                                   predictions=tf.arg_max(model_output, axis=1))
+
+    tf.identity(LEARNING_RATE, "learning_rate")
+    tf.identity(loss, "cross_entropy")
+    tf.identity(accuracy[1], "train_accuracy")
+
+    return tf.estimator.EstimatorSpec(
+      mode=mode,
+      loss=loss,
+      train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()))
 
   if mode == tf.estimator.ModeKeys.PREDICT:
     pass
