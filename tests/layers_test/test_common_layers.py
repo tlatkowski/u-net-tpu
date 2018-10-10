@@ -4,7 +4,7 @@ import tensorflow as tf
 from layers import common_layers
 
 
-class CommonLayersTest(tf.test.TestCase):
+class TestCommonLayers(tf.test.TestCase):
 
   def testDepthConcat(self):
     inputs = tf.constant(np.ones(shape=[1, 10, 10, 4]))
