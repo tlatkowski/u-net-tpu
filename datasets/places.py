@@ -20,8 +20,9 @@ def dataset(image_files):
   def decode_image(image):
     image_contents = tf.read_file(image)
     image = tf.image.decode_jpeg(image_contents)
+    image.set_shape([None, None, 3])
     image = tf.cast(image, tf.float32)
-    # image = tf.image.resize_nearest_neighbor(image, size=256)
+    image = tf.image.resize_images(image, size=[512, 512])
     return image
 
   images = tf.data.Dataset.from_tensor_slices(image_files).map(decode_image)
