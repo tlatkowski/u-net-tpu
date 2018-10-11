@@ -70,8 +70,9 @@ def crop(image_to_crop, target_image):
   )
 
 
-def output_feed_forward_layer():
-  raise NotImplementedError
+def output_feed_forward_layer(inputs):
+  ff = tf.layers.dense(inputs, units=1024)
+  return ff
 
 
 def compute_offset(dim1, dim2):

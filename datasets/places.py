@@ -12,9 +12,6 @@ def get_files(dir):
   return paths
 
 
-PLACES_TRAIN_IMAGES_FILES = get_files()
-
-
 def dataset(image_files):
   def decode_image(image_file):
     image_contents = tf.read_file(image_file)
@@ -37,12 +34,12 @@ def test(test_dir):
   return dataset(get_files(test_dir))
 
 
-iter = train().make_initializable_iterator()
-el = iter.get_next()
-
-with tf.Session() as session:
-  session.run(tf.global_variables_initializer())
-  session.run(iter.initializer)
-  a = session.run(el)
-  misc.imsave('save.jpg', a[:, :, 0])
-  print(np.shape(a))
+# iter = train().make_initializable_iterator()
+# el = iter.get_next()
+#
+# with tf.Session() as session:
+#   session.run(tf.global_variables_initializer())
+#   session.run(iter.initializer)
+#   a = session.run(el)
+#   misc.imsave('save.jpg', a[:, :, 0])
+#   print(np.shape(a))

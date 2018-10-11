@@ -2,6 +2,7 @@ import tensorflow as tf
 
 from datasets import places
 from layers import unet_layers
+from layers import common_layers
 
 LEARNING_RATE = 1e-4
 
@@ -9,7 +10,9 @@ LEARNING_RATE = 1e-4
 def create_model(inputs):
   _, encoder_outputs = unet_layers.encoder(inputs)
   decoder_output = unet_layers.decoder(encoder_outputs)
-  return unet_layers.output_layer(decoder_output)
+  unet_output = unet_layers.output_layer(decoder_output)
+  unet_clf_output = common_layers.output_feed_forward_layer(unet_output)
+  return unet_clf_output
 
 
 def model_fn(features, labels, mode, params):
