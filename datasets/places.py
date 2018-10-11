@@ -16,8 +16,8 @@ PLACES_TRAIN_IMAGES_FILES = get_files()
 
 
 def dataset(image_files):
-  def decode_image(image):
-    image_contents = tf.read_file(image)
+  def decode_image(image_file):
+    image_contents = tf.read_file(image_file)
     image = tf.image.decode_jpeg(image_contents)
     image.set_shape([None, None, 3])
     image = tf.cast(image, tf.float32)

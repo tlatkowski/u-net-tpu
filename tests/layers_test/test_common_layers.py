@@ -102,3 +102,6 @@ class TestCommonLayers(tf.test.TestCase):
       actual_cropped_image = session.run(cropped_image)
       expected_cropped_image = np.array([5., 6., 9., 10.]).reshape([1, 2, 2, 1])
       self.assertAllEqual(expected_cropped_image, actual_cropped_image)
+
+  def testOutputFeedForwardLayer(self):
+    common_layers.output_feed_forward_layer()

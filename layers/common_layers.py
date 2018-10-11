@@ -45,7 +45,7 @@ def max_pooling2d(inputs, pool_size=2, strides=[2, 2], padding="valid"):
 
 
 def up_pooling2d():
-  pass
+  raise NotImplementedError
 
 
 def up_scaling2d(inputs):
@@ -69,5 +69,12 @@ def crop(image_to_crop, target_image):
     target_width=crop_width
   )
 
+
+def output_feed_forward_layer():
+  raise NotImplementedError
+
+
 def compute_offset(dim1, dim2):
   return int((dim1 - dim2) / 2)
+
+
