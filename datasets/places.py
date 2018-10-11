@@ -4,16 +4,15 @@ from scipy import misc
 import os
 
 
-def get_paths():
+def get_files(dir):
   paths = []
-  path = os.path.expanduser("~/tcl-research/git/u-net-tpu/places")
-  for file in os.listdir(
-      os.path.expanduser("~/tcl-research/git/u-net-tpu/places")):
+  path = os.path.expanduser(dir)
+  for file in os.listdir(path):
     paths.append(os.path.join(path, file))
   return paths
 
 
-PLACES_TRAIN_DIR = get_paths()
+PLACES_TRAIN_IMAGES_FILES = get_files()
 
 
 def dataset(image_files):
@@ -30,8 +29,12 @@ def dataset(image_files):
   return images
 
 
-def train():
-  return dataset(PLACES_TRAIN_DIR)
+def train(train_dir):
+  return dataset(get_files(train_dir))
+
+
+def test(test_dir):
+  return dataset(get_files(test_dir))
 
 
 iter = train().make_initializable_iterator()
