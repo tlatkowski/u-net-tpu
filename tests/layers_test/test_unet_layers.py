@@ -36,4 +36,16 @@ class TestUnetLayers(tf.test.TestCase):
     self.assertEqual(expected_y_shape, actual_y_shape)
 
   def testOutputLayer(self):
-    raise NotImplementedError
+    inputs = tf.constant(np.ones(shape=[1, 388, 388, 64]))
+    unet_output = unet_layers.output_layer(inputs)
+
+    expected_num_filters = 2
+    expected_x_shape = expected_y_shape = 388
+
+    actual_num_filters = unet_output.get_shape().as_list()[-1]
+    actual_x_shape = unet_output.get_shape().as_list()[1]
+    actual_y_shape = unet_output.get_shape().as_list()[2]
+
+    self.assertEqual(expected_num_filters, actual_num_filters)
+    self.assertEqual(expected_x_shape, actual_x_shape)
+    self.assertEqual(expected_y_shape, actual_y_shape)
