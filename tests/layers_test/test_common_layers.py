@@ -103,5 +103,10 @@ class TestCommonLayers(tf.test.TestCase):
       expected_cropped_image = np.array([5., 6., 9., 10.]).reshape([1, 2, 2, 1])
       self.assertAllEqual(expected_cropped_image, actual_cropped_image)
 
-  def testOutputFeedForwardLayer(self):
-    common_layers.output_feed_forward_layer()
+  def testFeedForwardReluLayerDefaultUnits(self):
+    inputs = tf.constant(np.ones(shape=[1, 4, 4, 16]))
+    ff_layer = common_layers.feed_forward_relu_layer(inputs)
+
+    expected_image_dim = 1024
+    actual_image_dim = ff_layer.get_shape().as_list()[1]
+    self.assertEqual(expected_image_dim, actual_image_dim)

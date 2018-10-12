@@ -1,3 +1,5 @@
+import functools
+
 import tensorflow as tf
 
 
@@ -70,12 +72,14 @@ def crop(image_to_crop, target_image):
   )
 
 
-def output_feed_forward_layer(inputs):
-  ff = tf.layers.dense(inputs, units=1024)
-  return ff
+def feed_forward_relu_layer(inputs, units=1024):
+  dims = inputs.get_shape().as_list()
+  assert len(dims) == 4
+  new_dim = functools.reduce(lambda x, y: x * y, dims[1:])
+  inputs_flat = tf.reshape(inputs, [-1, new_dim])
+  ff_layer = tf.layers.dense(inputs_flat, units=units, activation=tf.nn.relu)
+  return ff_layer
 
 
 def compute_offset(dim1, dim2):
   return int((dim1 - dim2) / 2)
-
-
