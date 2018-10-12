@@ -107,6 +107,15 @@ class TestCommonLayers(tf.test.TestCase):
     inputs = tf.constant(np.ones(shape=[1, 4, 4, 16]))
     ff_layer = common_layers.feed_forward_relu_layer(inputs)
 
-    expected_image_dim = 1024
-    actual_image_dim = ff_layer.get_shape().as_list()[1]
-    self.assertEqual(expected_image_dim, actual_image_dim)
+    expected_layer_dim = 1024
+    actual_layer_dim = ff_layer.get_shape().as_list()[1]
+    self.assertEqual(expected_layer_dim, actual_layer_dim)
+
+  def testLogitsLayer(self):
+    inputs = tf.constant(np.ones(shape=[4, 16]))
+    num_classes = 8
+    ff_layer = common_layers.logits_layer(inputs, num_classes)
+
+    expected_layer_dim = 8
+    actual_layer_dim = ff_layer.get_shape().as_list()[1]
+    self.assertEqual(expected_layer_dim, actual_layer_dim)

@@ -12,6 +12,7 @@ def create_model(inputs):
   decoder_output = unet_layers.decoder(encoder_outputs)
   unet_output = unet_layers.output_layer(decoder_output)
   unet_clf_output = common_layers.feed_forward_relu_layer(unet_output)
+  logits = common_layers.logits_layer(unet_clf_output, num_classes=10)
   return unet_clf_output
 
 

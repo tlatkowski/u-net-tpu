@@ -81,5 +81,12 @@ def feed_forward_relu_layer(inputs, units=1024):
   return ff_layer
 
 
+def logits_layer(inputs, num_classes):
+  dims = inputs.get_shape().as_list()
+  assert len(dims) == 2
+  logists = tf.layers.dense(inputs, units=num_classes)
+  return logists
+
+
 def compute_offset(dim1, dim2):
   return int((dim1 - dim2) / 2)
