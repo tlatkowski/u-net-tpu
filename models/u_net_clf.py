@@ -7,13 +7,13 @@ from layers import common_layers
 LEARNING_RATE = 1e-4
 
 
-def create_model(inputs):
+def create_model(inputs, num_classes):
   _, encoder_outputs = unet_layers.encoder(inputs)
   decoder_output = unet_layers.decoder(encoder_outputs)
   unet_output = unet_layers.output_layer(decoder_output)
   unet_clf_output = common_layers.feed_forward_relu_layer(unet_output)
-  logits = common_layers.logits_layer(unet_clf_output, num_classes=10)
-  return unet_clf_output
+  logits = common_layers.logits_layer(unet_clf_output, num_classes)
+  return logits
 
 
 def model_fn(features, labels, mode, params):
@@ -21,7 +21,7 @@ def model_fn(features, labels, mode, params):
 
   if mode == tf.estimator.ModeKeys.TRAIN:
     optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE)
-    model_output = create_model(image)
+    model_output = create_model(image, params["num_classes"])
     loss = tf.losses.sparse_softmax_cross_entropy(labels=labels,
                                                   logits=model_output)
 
@@ -45,7 +45,10 @@ def run_u_net():
   u_net_model = tf.estimator.Estimator(
     model_fn=model_fn,
     model_dir="/path/to/model",
-    config=None
+    config=None,
+    params={
+      "num_classes": 10
+    }
   )
 
   def train_input_fn():
