@@ -1,10 +1,13 @@
 import tensorflow as tf
 
 from datasets import places
-from layers import unet_layers
 from layers import common_layers
+from layers import unet_layers
 
 LEARNING_RATE = 1e-4
+NUM_CLASSES = 10
+BATCH_SIZE = 16
+NUM_EPOCHS = 10
 
 
 def create_model(inputs, num_classes):
@@ -47,15 +50,15 @@ def run_u_net():
     model_dir="/path/to/model",
     config=None,
     params={
-      "num_classes": 10
+      "num_classes": NUM_CLASSES
     }
   )
 
   def train_input_fn():
     train_data = places.train()
     train_data = train_data.cache().shuffle(buffer_size=50000).batch(
-      batch_size=16)
-    train_data = train_data.repeat(10)
+      batch_size=BATCH_SIZE)
+    train_data = train_data.repeat(NUM_EPOCHS)
     return train_data
 
   def eval_input_fn():
