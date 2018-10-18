@@ -13,6 +13,7 @@ def get_files(dir):
 
 
 def dataset(image_files):
+
   def decode_image(image_file):
     image_contents = tf.read_file(image_file)
     image = tf.image.decode_jpeg(image_contents)
@@ -21,9 +22,14 @@ def dataset(image_files):
     image = tf.image.resize_images(image, size=[512, 512])
     return image
 
-  images = tf.data.Dataset.from_tensor_slices(image_files).map(decode_image)
+  def decode_label(label):
+    label = tf.decode_raw(label, tf.uint8)  # tf.string -> [tf.uint8]
+    label = tf.reshape(label, [])  # label is a scalar
+    return tf.to_int32(label)
 
-  return images
+  images = tf.data.Dataset.from_tensor_slices(image_files).map(decode_image)
+  labels = tf.data.Dataset.from_tensor_slices(image_files).map(decode_label)
+  return tf.data.Dataset.zip((images, labels))
 
 
 def train(train_dir):

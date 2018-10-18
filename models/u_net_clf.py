@@ -30,8 +30,8 @@ def model_fn(features, labels, mode, params):
     loss = tf.losses.sparse_softmax_cross_entropy(labels=labels,
                                                   logits=logits)
 
-    accuracy = tf.metrics.accuracy(labels=labels,
-                                   predictions=tf.arg_max(logits, axis=1))
+    predictions = tf.argmax(logits, axis=1)
+    accuracy = tf.metrics.accuracy(labels=labels, predictions=predictions)
 
     tf.identity(LEARNING_RATE, "learning_rate")
     tf.identity(loss, "cross_entropy")
