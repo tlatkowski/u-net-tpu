@@ -1,3 +1,5 @@
+import argparse
+
 import tensorflow as tf
 
 from datasets import places
@@ -24,12 +26,12 @@ def model_fn(features, labels, mode, params):
 
   if mode == tf.estimator.ModeKeys.TRAIN:
     optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE)
-    model_output = create_model(image, params["num_classes"])
+    logits = create_model(image, params["num_classes"])
     loss = tf.losses.sparse_softmax_cross_entropy(labels=labels,
-                                                  logits=model_output)
+                                                  logits=logits)
 
     accuracy = tf.metrics.accuracy(labels=labels,
-                                   predictions=tf.arg_max(model_output, axis=1))
+                                   predictions=tf.arg_max(logits, axis=1))
 
     tf.identity(LEARNING_RATE, "learning_rate")
     tf.identity(loss, "cross_entropy")
@@ -44,7 +46,7 @@ def model_fn(features, labels, mode, params):
     pass
 
 
-def run_u_net():
+def run_u_net(train_dir):
   u_net_model = tf.estimator.Estimator(
     model_fn=model_fn,
     model_dir="/path/to/model",
@@ -55,7 +57,7 @@ def run_u_net():
   )
 
   def train_input_fn():
-    train_data = places.train()
+    train_data = places.train(train_dir)
     train_data = train_data.cache().shuffle(buffer_size=50000).batch(
       batch_size=BATCH_SIZE)
     train_data = train_data.repeat(NUM_EPOCHS)
@@ -68,4 +70,12 @@ def run_u_net():
 
 
 if __name__ == '__main__':
-  run_u_net()
+  args_parser = argparse.ArgumentParser()
+
+  args_parser.add_argument("--train_dir",
+                           required=True,
+                           type=str,
+                           help="Path to training examples")
+
+  args = args_parser.parse_args()
+  run_u_net(args.train_dir)
