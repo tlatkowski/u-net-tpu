@@ -1,19 +1,19 @@
-import numpy as np
-import tensorflow as tf
-from scipy import misc
 import os
+
+import tensorflow as tf
 
 
 def get_files(dir):
   paths = []
+  files = []
   path = os.path.expanduser(dir)
   for file in os.listdir(path):
     paths.append(os.path.join(path, file))
-  return paths
+    files.append(file.split(".")[0])
+  return paths, files
 
 
-def dataset(image_files):
-
+def dataset(image_files, files):
   def decode_image(image_file):
     image_contents = tf.read_file(image_file)
     image = tf.image.decode_jpeg(image_contents)
@@ -28,7 +28,7 @@ def dataset(image_files):
     return tf.to_int32(label)
 
   images = tf.data.Dataset.from_tensor_slices(image_files).map(decode_image)
-  labels = tf.data.Dataset.from_tensor_slices(image_files).map(decode_label)
+  labels = tf.data.Dataset.from_tensor_slices(files).map(decode_label)
   return tf.data.Dataset.zip((images, labels))
 
 
@@ -38,14 +38,3 @@ def train(train_dir):
 
 def test(test_dir):
   return dataset(get_files(test_dir))
-
-
-# iter = train().make_initializable_iterator()
-# el = iter.get_next()
-#
-# with tf.Session() as session:
-#   session.run(tf.global_variables_initializer())
-#   session.run(iter.initializer)
-#   a = session.run(el)
-#   misc.imsave('save.jpg', a[:, :, 0])
-#   print(np.shape(a))
