@@ -33,7 +33,8 @@ def dataset(image_files, files):
 
 
 def train(train_dir):
-  return dataset(get_files(train_dir))
+  image_paths, image_files = get_files(train_dir)
+  return dataset(image_paths, image_files)
 
 
 def test(test_dir):

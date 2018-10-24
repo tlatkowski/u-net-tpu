@@ -9,9 +9,9 @@ class TestPlacesDataset(tf.test.TestCase):
 
   def testDataset(self):
     path = os.path.join(os.path.abspath('.'), "data_test")
-    image_files, files = places.get_files(path)
+    image_paths, image_files = places.get_files(path)
 
-    dataset = places.dataset(image_files, files)
+    dataset = places.dataset(image_paths, image_files)
 
     dataset_iterator = dataset.make_initializable_iterator()
     instance = dataset_iterator.get_next()
