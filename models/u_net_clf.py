@@ -46,10 +46,10 @@ def model_fn(features, labels, mode, params):
     pass
 
 
-def run_u_net(train_dir):
+def run_u_net(train_dir, eval_dir, model_dir):
   u_net_model = tf.estimator.Estimator(
     model_fn=model_fn,
-    model_dir="/path/to/model",
+    model_dir=model_dir,
     config=None,
     params={
       "num_classes": NUM_CLASSES
@@ -77,5 +77,15 @@ if __name__ == '__main__':
                            type=str,
                            help="Path to training examples")
 
+  args_parser.add_argument("--eval_dir",
+                           required=True,
+                           type=str,
+                           help="Path to evaluation examples")
+
+  args_parser.add_argument("--model_dir",
+                           default="./model",
+                           type=str,
+                           help="Path to model")
+
   args = args_parser.parse_args()
-  run_u_net(args.train_dir)
+  run_u_net(args.train_dir, args.eval_dir, args.model_dir)
