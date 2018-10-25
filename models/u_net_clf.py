@@ -43,7 +43,17 @@ def model_fn(features, labels, mode, params):
       train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()))
 
   if mode == tf.estimator.ModeKeys.PREDICT:
-    pass
+    logits = create_model(image)
+    predictions = {
+        'classes': tf.argmax(logits, axis=1),
+        'probabilities': tf.nn.softmax(logits),
+    }
+    return tf.estimator.EstimatorSpec(
+        mode=tf.estimator.ModeKeys.PREDICT,
+        predictions=predictions,
+        export_outputs={
+            'classify': tf.estimator.export.PredictOutput(predictions)
+        })
 
 
 def run_u_net(train_dir, eval_dir, model_dir):
@@ -83,7 +93,7 @@ if __name__ == '__main__':
                            help="Path to evaluation examples")
 
   args_parser.add_argument("--model_dir",
-                           default="./model",
+                           default="./u-net",
                            type=str,
                            help="Path to model")
 
