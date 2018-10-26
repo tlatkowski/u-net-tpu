@@ -25,7 +25,9 @@ def dataset(image_files, files):
   def decode_label(label):
     label = tf.decode_raw(label, tf.uint8)  # tf.string -> [tf.uint8]
     label = tf.reshape(label, [])  # label is a scalar
-    return tf.to_int32(label)
+    label = tf.to_int32(label)
+    label = tf.expand_dims(label, -1)
+    return label
 
   images = tf.data.Dataset.from_tensor_slices(image_files).map(decode_image)
   labels = tf.data.Dataset.from_tensor_slices(files).map(decode_label)

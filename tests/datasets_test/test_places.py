@@ -19,6 +19,10 @@ class TestPlacesDataset(tf.test.TestCase):
       session.run(tf.global_variables_initializer())
       session.run(dataset_iterator.initializer)
       image, label = session.run(instance)
-      expected_shape = (512, 512, 3)
-      actual_shape = image.shape
-      self.assertSequenceEqual(expected_shape, actual_shape)
+      expected_image_shape = (512, 512, 3)
+      expected_label_shape = (1,)
+
+      actual_image_shape = image.shape
+      actual_label_shape = label.shape
+      self.assertSequenceEqual(expected_image_shape, actual_image_shape)
+      self.assertSequenceEqual(expected_label_shape, actual_label_shape)
