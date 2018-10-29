@@ -1,4 +1,5 @@
 import argparse
+from datasets import problems
 
 import tensorflow as tf
 
@@ -8,7 +9,7 @@ from layers import unet_layers
 
 LEARNING_RATE = 1e-4
 NUM_CLASSES = 10
-BATCH_SIZE = 16
+BATCH_SIZE = 1
 NUM_EPOCHS = 10
 
 
@@ -45,15 +46,15 @@ def model_fn(features, labels, mode, params):
   if mode == tf.estimator.ModeKeys.PREDICT:
     logits = create_model(image)
     predictions = {
-        'classes': tf.argmax(logits, axis=1),
-        'probabilities': tf.nn.softmax(logits),
+      'classes': tf.argmax(logits, axis=1),
+      'probabilities': tf.nn.softmax(logits),
     }
     return tf.estimator.EstimatorSpec(
-        mode=tf.estimator.ModeKeys.PREDICT,
-        predictions=predictions,
-        export_outputs={
-            'classify': tf.estimator.export.PredictOutput(predictions)
-        })
+      mode=tf.estimator.ModeKeys.PREDICT,
+      predictions=predictions,
+      export_outputs={
+        'classify': tf.estimator.export.PredictOutput(predictions)
+      })
 
 
 def run_u_net(train_dir, eval_dir, model_dir):
@@ -91,6 +92,12 @@ if __name__ == '__main__':
                            required=True,
                            type=str,
                            help="Path to evaluation examples")
+
+  args_parser.add_argument("--problem",
+                           required=True,
+                           type=str,
+                           choices=problems.Problem,
+                           help="Problem to solve")
 
   args_parser.add_argument("--model_dir",
                            default="./u-net",
