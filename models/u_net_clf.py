@@ -1,9 +1,8 @@
 import argparse
-from datasets import problems
 
 import tensorflow as tf
 
-from datasets import places
+from datasets import problems
 from layers import common_layers
 from layers import unet_layers
 
@@ -57,7 +56,7 @@ def model_fn(features, labels, mode, params):
       })
 
 
-def run_u_net(train_dir, eval_dir, model_dir):
+def run_u_net(problem, train_dir, eval_dir, model_dir):
   u_net_model = tf.estimator.Estimator(
     model_fn=model_fn,
     model_dir=model_dir,
@@ -68,7 +67,7 @@ def run_u_net(train_dir, eval_dir, model_dir):
   )
 
   def train_input_fn():
-    train_data = places.train(train_dir)
+    train_data = problem.train(train_dir)
     train_data = train_data.cache().shuffle(buffer_size=50000).batch(
       batch_size=BATCH_SIZE)
     train_data = train_data.repeat(NUM_EPOCHS)
@@ -105,4 +104,5 @@ if __name__ == '__main__':
                            help="Path to model")
 
   args = args_parser.parse_args()
-  run_u_net(args.train_dir, args.eval_dir, args.model_dir)
+  problem = problems.get_problem(args.problem)
+  run_u_net(problem, args.train_dir, args.eval_dir, args.model_dir)
