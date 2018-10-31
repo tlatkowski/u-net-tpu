@@ -95,7 +95,7 @@ if __name__ == '__main__':
   args_parser.add_argument("--problem",
                            required=True,
                            type=str,
-                           choices=problems.Problem,
+                           choices=problems.all_problems(),
                            help="Problem to solve")
 
   args_parser.add_argument("--model_dir",

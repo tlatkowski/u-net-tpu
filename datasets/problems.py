@@ -15,3 +15,10 @@ def get_problem(problem: Problem):
     return places
   else:
     raise NotImplementedError
+
+
+def all_problems():
+  p = []
+  for problem in Problem:
+    p.append(problem.name)
+  return p
