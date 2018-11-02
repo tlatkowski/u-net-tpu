@@ -8,10 +8,10 @@ class Problem(enum.Enum):
   PLACES = 1
 
 
-def get_problem(problem: Problem):
-  if problem is Problem.MNIST:
+def get_problem(problem):
+  if problem == Problem.MNIST.name:
     return mnist
-  elif problem is Problem.PLACES:
+  elif problem == Problem.PLACES.name:
     return places
   else:
     raise NotImplementedError
