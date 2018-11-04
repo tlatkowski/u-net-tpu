@@ -62,7 +62,7 @@ def run_u_net(problem, train_dir, eval_dir, model_dir):
     model_dir=model_dir,
     config=None,
     params={
-      "num_classes": NUM_CLASSES
+      "num_classes": problem.num_classes()
     }
   )
 

@@ -115,3 +115,7 @@ def train(directory):
 def test(directory):
   """tf.data.Dataset object for MNIST test data."""
   return dataset(directory, 't10k-images-idx3-ubyte', 't10k-labels-idx1-ubyte')
+
+
+def num_classes():
+  return 10
