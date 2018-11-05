@@ -1,7 +1,8 @@
 from layers import common_layers
 import tensorflow as tf
 
-NUM_FILTERS = [64, 128, 256, 512, 1024]
+# NUM_FILTERS = [64, 128, 256, 512, 1024]
+NUM_FILTERS = [64, 128]
 NUM_LAYERS = len(NUM_FILTERS)
 
 ENCODER_LAYER_NAME_PATTERN = "down-layer-{}"

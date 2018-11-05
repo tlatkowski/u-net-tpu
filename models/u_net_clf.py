@@ -8,8 +8,10 @@ from layers import unet_layers
 
 LEARNING_RATE = 1e-4
 NUM_CLASSES = 10
-BATCH_SIZE = 1
+BATCH_SIZE = 32
 NUM_EPOCHS = 10
+
+tf.logging.set_verbosity(tf.logging.INFO)
 
 
 def create_model(inputs, params):
