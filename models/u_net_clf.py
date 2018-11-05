@@ -14,8 +14,8 @@ NUM_EPOCHS = 10
 
 def create_model(inputs, params):
   num_classes = params['num_classes']
-  if len(inputs.shape().as_list()) != 4:
-    input_shape = params['input_size']
+  if len(inputs.shape.as_list()) != 4:
+    input_shape = params['input_shape']
     inputs = tf.reshape(inputs, shape=input_shape)
 
   _, encoder_outputs = unet_layers.encoder(inputs)
@@ -28,11 +28,10 @@ def create_model(inputs, params):
 
 def model_fn(features, labels, mode, params):
   image = features
-  image = tf.reshape(image, shape=[-1, 28, 28, 1])
 
   if mode == tf.estimator.ModeKeys.TRAIN:
     optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE)
-    logits = create_model(image, params["num_classes"])
+    logits = create_model(image, params)
     loss = tf.losses.sparse_softmax_cross_entropy(labels=labels,
                                                   logits=logits)
 
