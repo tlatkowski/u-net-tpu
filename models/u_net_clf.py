@@ -12,7 +12,12 @@ BATCH_SIZE = 1
 NUM_EPOCHS = 10
 
 
-def create_model(inputs, num_classes):
+def create_model(inputs, params):
+  num_classes = params['num_classes']
+  if len(inputs.shape().as_list()) != 4:
+    input_shape = params['input_size']
+    inputs = tf.reshape(inputs, shape=input_shape)
+
   _, encoder_outputs = unet_layers.encoder(inputs)
   decoder_output = unet_layers.decoder(encoder_outputs)
   unet_output = unet_layers.output_layer(decoder_output)
@@ -63,7 +68,8 @@ def run_u_net(problem, train_dir, eval_dir, model_dir):
     model_dir=model_dir,
     config=None,
     params={
-      "num_classes": problem.num_classes()
+      "num_classes": problem.num_classes(),
+      "input_shape": problem.input_shape()
     }
   )
 

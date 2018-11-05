@@ -119,3 +119,7 @@ def test(directory):
 
 def num_classes():
   return 10
+
+
+def input_shape():
+  return [-1, 28, 28, 1]
