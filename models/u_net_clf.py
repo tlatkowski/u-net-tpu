@@ -23,6 +23,7 @@ def create_model(inputs, num_classes):
 
 def model_fn(features, labels, mode, params):
   image = features
+  image = tf.reshape(image, shape=[-1, 28, 28, 1])
 
   if mode == tf.estimator.ModeKeys.TRAIN:
     optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE)
