@@ -66,10 +66,11 @@ def model_fn(features, labels, mode, params):
 
 def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, model_dir,
               use_tpu=True):
-  def train_input_fn():
+  def train_input_fn(params):
+    batch_size = params["batch_size"]
     train_data = problem.train(train_dir)
     train_data = train_data.cache().shuffle(buffer_size=50000).batch(
-      batch_size=BATCH_SIZE)
+      batch_size=batch_size)
     train_data = train_data.repeat(NUM_EPOCHS)
     return train_data
 
