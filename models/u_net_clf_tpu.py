@@ -72,7 +72,7 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     data_dir = params["data_dir"]
 
     train_data = problem.train(train_dir)
-    ds = train_data.test(data_dir).apply(
+    ds = train_data.apply(
       tf.contrib.data.batch_and_drop_remainder(batch_size))
     images, labels = ds.make_one_shot_iterator().get_next()
 
