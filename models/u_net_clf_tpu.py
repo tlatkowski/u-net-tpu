@@ -105,7 +105,11 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     train_batch_size=BATCH_SIZE,
     eval_batch_size=BATCH_SIZE,
     predict_batch_size=BATCH_SIZE,
-    params={"data_dir": train_dir},
+    params={
+      "data_dir": train_dir,
+      "num_classes": problem.num_classes(),
+      "input_shape": problem.input_shape()
+    },
     config=run_config)
 
   estimator.train(input_fn=train_input_fn, max_steps=train_steps)
