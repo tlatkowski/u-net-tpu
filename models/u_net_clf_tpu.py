@@ -162,7 +162,7 @@ if __name__ == '__main__':
                            help="Google Cloud Platform project")
 
   args_parser.add_argument("--model_dir",
-                           default="./u-net",
+                           required=True,
                            type=str,
                            help="Path to model")
 

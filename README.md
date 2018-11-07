@@ -1,19 +1,23 @@
 Under development
 
+To run U-Net model on TPU Google Cloud Platform 
 ```bash
 # TPU configuration
-GCP_PROJECT=YOUR_GCP_PROJECT
-TPU_ZONE=YOUR_TPU_ZONE
-TPU_NAME=YOUR_TPU_NAME
+GCP_PROJECT=YOUR-GCP-PROJECT
+TPU_ZONE=YOUR-TPU-ZONE
+TPU_NAME=YOUR-TPU-NAME
+MODEL_DIR=gs://YOUR-GOOGLE-CLOUD-BUCKET
 
 # problem/model configuration
 PROBLEM=MNIST
-
+TRAIN_DIR=PATH-TO-TRAIN-DIR
+EVAL_DIR=PATH-TO-EVALUATION-DIR
 
 python u_net_clf_tpu.py \
---train_dir="~/tcl-research/git/u-net-tpu/places/train" \
---eval_dir="~/tcl-research/git/u-net-tpu/places/test" \
+--train_dir=$TRAIN_DIR \
+--eval_dir=$EVAL_DIR \
 --problem=$PROBLEM \
+--model_dir=$MODEL_DIR \
 --tpu_name=$TPU_NAME \
 --tpu_zone=$TPU_ZONE \
 --gcp_project=$GCP_PROJECT
@@ -22,10 +26,3 @@ python u_net_clf_tpu.py \
 
 
 
-python u_net_clf_tpu.py \
---train_dir="~/tcl-research/git/u-net-tpu/places/train" \
---eval_dir="~/tcl-research/git/u-net-tpu/places/test" \
---problem="MNIST" \
---tpu_name=tpu-vm \
---tpu_zone=us-central1-f \
---gcp_project=ml-research-tcl
