@@ -52,9 +52,17 @@ def up_pooling2d():
 
 def up_scaling2d(inputs):
   current_size = inputs.get_shape().as_list()[1]
-  return tf.image.resize_nearest_neighbor(inputs,
-                                          size=[2 * current_size,
-                                                2 * current_size])
+  return tf.image.resize_images(inputs,
+                                size=[2 * current_size,
+                                      2 * current_size])
+
+
+#
+# def up_scaling2d(inputs):
+#   current_size = inputs.get_shape().as_list()[1]
+#   return tf.image.resize_nearest_neighbor(inputs,
+#                                           size=[2 * current_size,
+#                                                 2 * current_size])
 
 
 def crop(image_to_crop, target_image):
