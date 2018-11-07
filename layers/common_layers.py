@@ -1,6 +1,12 @@
+import enum
 import functools
 
 import tensorflow as tf
+
+
+class UpScalingType(enum.Enum):
+  TRANSPOSE_CONV = 0,
+  RESIZE_NN = 1
 
 
 def convolution_down(inputs, num_filters, filter_size=3, strides=[1, 1],
@@ -50,23 +56,25 @@ def up_pooling2d():
   raise NotImplementedError
 
 
-def up_scaling2d(inputs):
-  current_size = inputs.get_shape().as_list()[1]
+def up_scaling2d(inputs, type=UpScalingType.RESIZE_NN):
+  if type is UpScalingType.TRANSPOSE_CONV:
+    return conv2d_transpose(inputs)
+  elif type is UpScalingType.RESIZE_NN:
+    return resize_nearest_neighbor(inputs)
+  else:
+    raise NotImplementedError
+
+
+def conv2d_transpose(inputs):
   filters = inputs.get_shape().as_list()[-1]
-  conv_2d = tf.layers.conv2d_transpose(inputs,
-                                       filters=filters,
-                                       kernel_size=3,
-                                       strides=[2, 2],
+  conv_2d = tf.layers.conv2d_transpose(inputs, filters=filters, kernel_size=3, strides=[2, 2],
                                        padding='same')
   return conv_2d
 
 
-#
-# def up_scaling2d(inputs):
-#   current_size = inputs.get_shape().as_list()[1]
-#   return tf.image.resize_nearest_neighbor(inputs,
-#                                           size=[2 * current_size,
-#                                                 2 * current_size])
+def resize_nearest_neighbor(inputs):
+  current_size = inputs.get_shape().as_list()[1]
+  return tf.image.resize_nearest_neighbor(inputs, size=[2 * current_size, 2 * current_size])
 
 
 def crop(image_to_crop, target_image):
