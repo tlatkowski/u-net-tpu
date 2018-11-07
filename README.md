@@ -1,6 +1,19 @@
-Under development
+**[Under development]**
 
-To run U-Net model on TPU Google Cloud Platform 
+### Run U-Net model on TPU Google Cloud Platform 
+
+##### Create bucket for storing training checkpoints:
+
+Execute the following commands to create a bucket on your TPU VM instance:
+```bash
+GCP_PROJECT=YOUR-GCP-PROJECT
+MODEL_DIR=gs://YOUR-GOOGLE-CLOUD-BUCKET
+
+gsutil mb -p $GCP_PROJECT $MODEL_DIR
+```
+
+##### Run U-Net model training on TPU flock:
+
 ```bash
 # TPU configuration
 GCP_PROJECT=YOUR-GCP-PROJECT
