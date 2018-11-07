@@ -66,7 +66,6 @@ def model_fn(features, labels, mode, params):
 
 def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, model_dir,
               use_tpu=True):
-
   def train_input_fn(params):
     batch_size = params["batch_size"]
     data_dir = params["data_dir"]
@@ -113,18 +112,6 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     config=run_config)
 
   estimator.train(input_fn=train_input_fn, max_steps=train_steps)
-
-  u_net_model = tf.estimator.Estimator(
-    model_fn=model_fn,
-    model_dir=model_dir,
-    config=None,
-    params={
-      "num_classes": problem.num_classes(),
-      "input_shape": problem.input_shape()
-    }
-  )
-
-  u_net_model.train(input_fn=train_input_fn)
 
 
 if __name__ == '__main__':
