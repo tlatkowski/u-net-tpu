@@ -1,5 +1,6 @@
-from layers import common_layers
 import tensorflow as tf
+
+from layers import common_layers
 
 # NUM_FILTERS = [64, 128, 256, 512, 1024]
 NUM_FILTERS = [64, 128]
@@ -35,7 +36,7 @@ def encoder(inputs):
   return encoder_layers, encoder_cache
 
 
-def decoder(inputs):
+def decoder(inputs, up_scaling_type=common_layers.UpScalingType.RESIZE_NN):
   num_layers = len(inputs)
   current_decoder_output = None
   with tf.variable_scope("decoder"):
@@ -48,14 +49,16 @@ def decoder(inputs):
         current_layer = inputs[current_layer_name]
         current_decoder_output = common_layers.convolution_up(previous_layer,
                                                               current_layer,
-                                                              num_filters)
+                                                              num_filters,
+                                                              up_scaling_type)
       else:
         layer_name = get_layer_name(i - 1)
         encoder_layer = inputs[layer_name]
         previous_layer = current_decoder_output
         current_decoder_output = common_layers.convolution_up(previous_layer,
                                                               encoder_layer,
-                                                              num_filters)
+                                                              num_filters,
+                                                              up_scaling_type)
 
     return current_decoder_output
 

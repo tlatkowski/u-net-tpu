@@ -17,9 +17,9 @@ def convolution_down(inputs, num_filters, filter_size=3, strides=[1, 1],
   return max_pool, conv2
 
 
-def convolution_up(inputs, inputs_contracting_path, num_filters, filter_size=3,
+def convolution_up(inputs, inputs_contracting_path, num_filters, up_scaling_type, filter_size=3,
                    strides=[1, 1], padding="valid"):
-  inputs_upsampled = up_scaling2d(inputs)
+  inputs_upsampled = up_scaling2d(inputs, up_scaling_type)
   inputs_cropped = crop(inputs_contracting_path, inputs_upsampled)
   concat_inputs = concat_by_depth(inputs_upsampled, inputs_cropped)
   conv1 = convolution2d(concat_inputs, num_filters, filter_size, strides,

@@ -21,7 +21,8 @@ def create_model(inputs, params):
     inputs = tf.reshape(inputs, shape=input_shape)
 
   _, encoder_outputs = unet_layers.encoder(inputs)
-  decoder_output = unet_layers.decoder(encoder_outputs)
+  decoder_output = unet_layers.decoder(encoder_outputs,
+                                       up_scaling_type=common_layers.UpScalingType.TRANSPOSE_CONV)
   unet_output = unet_layers.output_layer(decoder_output)
   unet_clf_output = common_layers.feed_forward_relu_layer(unet_output)
   logits = common_layers.logits_layer(unet_clf_output, num_classes)
