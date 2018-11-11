@@ -10,6 +10,8 @@ LEARNING_RATE = 1e-4
 NUM_CLASSES = 10
 BATCH_SIZE = 32
 NUM_EPOCHS = 10
+ITERATIONS = 50
+NUM_SHARDS = 8
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -83,8 +85,6 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     eval_data = eval_data.batch(BATCH_SIZE).make_one_shot_iterator().get_next()
     return eval_data
 
-  iterations = 50
-  num_shards = 8
   tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
     tpu_name,
     zone=tpu_zone,
@@ -96,7 +96,7 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     model_dir=model_dir,
     session_config=tf.ConfigProto(
       allow_soft_placement=True, log_device_placement=True),
-    tpu_config=tf.contrib.tpu.TPUConfig(iterations, num_shards),
+    tpu_config=tf.contrib.tpu.TPUConfig(ITERATIONS, NUM_SHARDS),
   )
   train_steps = 1000
   estimator = tf.contrib.tpu.TPUEstimator(
