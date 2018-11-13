@@ -2,6 +2,36 @@
 
 ### Run U-Net model on TPU Google Cloud Platform 
 
+##### Config your TPU flock:
+
+Check your current Cloud TPU configuration (in Google Cloud Shell):
+```bash
+ctpu print-config
+```
+
+As a result you should get the similar outcome
+```bash
+ctpu configuration:
+        name: your-user-name
+        project: your-project-name
+        zone: your-zone
+```
+
+To run CTPU flock, in Google Cloud Shell, execute the following command
+```bash
+ZONE=YOUR-ZONE
+TPU_NAME=YOUR-TPU-NAME
+
+ctpu up --zone $ZONE --name $TPU_NAME
+```
+
+Once the CTPU flock is ready, ssh to your instance
+```bash
+GCP_PROJECT=YOUR-GCP-PROJECT
+
+gcloud compute --project $GCP_PROJECT ssh --zone $ZONE $TPU_NAME
+```
+
 ##### Create bucket for storing training checkpoints:
 
 Execute the following commands to create a bucket on your TPU VM instance:
