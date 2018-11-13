@@ -35,42 +35,41 @@ def create_model(inputs, params):
 
 def model_fn(features, labels, mode, params):
   image = features
-  use_tpu = True
+
   if mode == tf.estimator.ModeKeys.TRAIN:
     logits = create_model(image, params)
     loss = tf.losses.sparse_softmax_cross_entropy(labels=labels,
                                                   logits=logits)
 
-    learning_rate = tf.train.exponential_decay(
-      LEARNING_RATE,
-      tf.train.get_global_step(),
-      decay_steps=100000,
-      decay_rate=0.96)
+    learning_rate = tf.train.exponential_decay(LEARNING_RATE,
+                                               tf.train.get_global_step(),
+                                               decay_steps=100000,
+                                               decay_rate=0.96)
 
     optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+    distributed_optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
-    if use_tpu:
-      optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
     return tf.contrib.tpu.TPUEstimatorSpec(
       mode=mode,
       loss=loss,
-      train_op=optimizer.minimize(loss, tf.train.get_global_step()))
+      train_op=distributed_optimizer.minimize(loss, tf.train.get_global_step()))
+
   if mode == tf.estimator.ModeKeys.PREDICT:
     logits = create_model(image)
     predictions = {
       'classes': tf.argmax(logits, axis=1),
       'probabilities': tf.nn.softmax(logits),
     }
-    return tf.estimator.EstimatorSpec(
-      mode=tf.estimator.ModeKeys.PREDICT,
-      predictions=predictions,
-      export_outputs={
-        'classify': tf.estimator.export.PredictOutput(predictions)
-      })
+    return tf.estimator.EstimatorSpec(mode=tf.estimator.ModeKeys.PREDICT,
+                                      predictions=predictions,
+                                      export_outputs={
+                                        'classify': tf.estimator.export.PredictOutput(predictions)
+                                      })
 
 
 def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, model_dir,
               use_tpu=True):
+
   def train_input_fn(params):
     batch_size = params["batch_size"]
     data_dir = params["data_dir"]
@@ -115,6 +114,7 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     config=run_config)
 
   estimator.train(input_fn=train_input_fn, max_steps=TRAIN_STEPS)
+  estimator.evaluate(input_fn=eval_input_fn, steps=10)
 
 
 if __name__ == '__main__':
