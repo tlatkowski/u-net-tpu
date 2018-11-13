@@ -6,12 +6,14 @@ from datasets import problems
 from layers import common_layers
 from layers import unet_layers
 
-LEARNING_RATE = 1e-4
+# LEARNING_RATE = 1e-4
+LEARNING_RATE = 0.05
 NUM_CLASSES = 10
 BATCH_SIZE = 32
 NUM_EPOCHS = 10
 ITERATIONS = 50
 NUM_SHARDS = 8
+TRAIN_STEPS = 1000
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -98,7 +100,7 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
       allow_soft_placement=True, log_device_placement=True),
     tpu_config=tf.contrib.tpu.TPUConfig(ITERATIONS, NUM_SHARDS),
   )
-  train_steps = 1000
+
   estimator = tf.contrib.tpu.TPUEstimator(
     model_fn=model_fn,
     use_tpu=use_tpu,
@@ -112,7 +114,7 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     },
     config=run_config)
 
-  estimator.train(input_fn=train_input_fn, max_steps=train_steps)
+  estimator.train(input_fn=train_input_fn, max_steps=TRAIN_STEPS)
 
 
 if __name__ == '__main__':
