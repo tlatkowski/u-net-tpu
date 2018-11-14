@@ -13,6 +13,8 @@ NUM_EPOCHS = 10
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
+logger = tf.logging
+
 
 def create_model(inputs, params):
   num_classes = params['num_classes']
@@ -78,6 +80,7 @@ def run_u_net(problem, train_dir, eval_dir, model_dir):
 
   def train_input_fn():
     train_data = problem.train(train_dir)
+    logger.info("Number of training images: %s", problem.num_training())
     train_data = train_data.cache().shuffle(buffer_size=50000).batch(
       batch_size=BATCH_SIZE)
     train_data = train_data.repeat(NUM_EPOCHS)

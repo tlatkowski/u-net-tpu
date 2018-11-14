@@ -23,8 +23,14 @@ import shutil
 import tempfile
 
 import numpy as np
-from six.moves import urllib
 import tensorflow as tf
+from six.moves import urllib
+
+NUM_CLASSES = 10
+INPUT_SHAPE = [-1, 28, 28, 1]
+
+NUM_TRAINING_IMAGES = 60000
+NUM_TEST_IMAGES = 10000
 
 
 def read32(bytestream):
@@ -45,8 +51,8 @@ def check_image_file_header(filename):
                                                                      f.name))
     if rows != 28 or cols != 28:
       raise ValueError(
-          'Invalid MNIST file %s: Expected 28x28 images, found %dx%d' %
-          (f.name, rows, cols))
+        'Invalid MNIST file %s: Expected 28x28 images, found %dx%d' %
+        (f.name, rows, cols))
 
 
 def check_labels_file_header(filename):
@@ -100,9 +106,9 @@ def dataset(directory, images_file, labels_file):
     return tf.to_int32(label)
 
   images = tf.data.FixedLengthRecordDataset(
-      images_file, 28 * 28, header_bytes=16).map(decode_image)
+    images_file, 28 * 28, header_bytes=16).map(decode_image)
   labels = tf.data.FixedLengthRecordDataset(
-      labels_file, 1, header_bytes=8).map(decode_label)
+    labels_file, 1, header_bytes=8).map(decode_label)
   return tf.data.Dataset.zip((images, labels))
 
 
@@ -118,8 +124,16 @@ def test(directory):
 
 
 def num_classes():
-  return 10
+  return NUM_CLASSES
 
 
 def input_shape():
-  return [-1, 28, 28, 1]
+  return INPUT_SHAPE
+
+
+def num_training():
+  return NUM_TRAINING_IMAGES
+
+
+def num_test():
+  return NUM_TEST_IMAGES

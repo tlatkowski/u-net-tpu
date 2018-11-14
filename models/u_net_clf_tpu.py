@@ -6,7 +6,6 @@ from datasets import problems
 from layers import common_layers
 from layers import unet_layers
 
-# LEARNING_RATE = 1e-4
 LEARNING_RATE = 0.05
 NUM_CLASSES = 10
 BATCH_SIZE = 32
@@ -16,6 +15,8 @@ NUM_SHARDS = 8
 TRAIN_STEPS = 1000
 
 tf.logging.set_verbosity(tf.logging.INFO)
+
+logger = tf.logging
 
 
 def create_model(inputs, params):
@@ -69,12 +70,13 @@ def model_fn(features, labels, mode, params):
 
 def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, model_dir,
               use_tpu=True):
-
   def train_input_fn(params):
     batch_size = params["batch_size"]
     data_dir = params["data_dir"]
 
     train_data = problem.train(train_dir)
+    logger.info("Number of training images: %s", problem.num_training())
+
     ds = train_data.apply(
       tf.contrib.data.batch_and_drop_remainder(batch_size))
     images, labels = ds.make_one_shot_iterator().get_next()
@@ -83,6 +85,8 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
 
   def eval_input_fn():
     eval_data = problem.test(eval_dir)
+    logger.info("Number of test images: %s", problem.num_test())
+
     eval_data = eval_data.batch(BATCH_SIZE).make_one_shot_iterator().get_next()
     return eval_data
 
