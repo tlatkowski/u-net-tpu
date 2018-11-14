@@ -6,6 +6,8 @@
 This repository contains U-Net model implementation (originally proposed in [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597))
 with usage of Tensoflow TPUEstimators API.
 
+##### Model architecture
+
 ### Training U-Net on Cloud TPU
 
 ##### Config your TPU flock:
@@ -48,8 +50,10 @@ MODEL_DIR=gs://YOUR-GOOGLE-CLOUD-BUCKET
 gsutil mb -p $GCP_PROJECT $MODEL_DIR
 ```
 
-##### Run U-Net model training on TPU flock:
+##### Training U-Net model as a classifier on Cloud TPU
 
+In order to train your MNIST image classifier based on U-Net architecture and with the usage of Cloud TPU
+use **u_net_clf_tpu.py** script with the following parameters:
 ```bash
 # TPU configuration
 GCP_PROJECT=YOUR-GCP-PROJECT

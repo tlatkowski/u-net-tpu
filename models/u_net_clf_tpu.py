@@ -7,8 +7,7 @@ from layers import common_layers
 from layers import unet_layers
 
 LEARNING_RATE = 0.05
-NUM_CLASSES = 10
-BATCH_SIZE = 32
+GLOBAL_BATCH_SIZE = 1024
 NUM_EPOCHS = 10
 ITERATIONS = 50
 NUM_SHARDS = 8
@@ -70,6 +69,7 @@ def model_fn(features, labels, mode, params):
 
 def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, model_dir,
               use_tpu=True):
+
   def train_input_fn(params):
     batch_size = params["batch_size"]
     data_dir = params["data_dir"]
@@ -77,18 +77,25 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     train_data = problem.train(train_dir)
     logger.info("Number of training images: %s", problem.num_training())
 
-    ds = train_data.apply(
+    ds = train_data.cache().repeat().shuffle(buffer_size=50000).apply(
       tf.contrib.data.batch_and_drop_remainder(batch_size))
+
     images, labels = ds.make_one_shot_iterator().get_next()
 
     return images, labels
 
-  def eval_input_fn():
+  def eval_input_fn(params):
+    batch_size = params["batch_size"]
+
     eval_data = problem.test(eval_dir)
     logger.info("Number of test images: %s", problem.num_test())
 
-    eval_data = eval_data.batch(BATCH_SIZE).make_one_shot_iterator().get_next()
-    return eval_data
+    eval_data = eval_data.apply(
+      tf.contrib.data.batch_and_drop_remainder(batch_size))
+
+    images, labels = eval_data.make_one_shot_iterator().get_next()
+
+    return images, labels
 
   tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
     tpu_name,
@@ -107,9 +114,9 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
   estimator = tf.contrib.tpu.TPUEstimator(
     model_fn=model_fn,
     use_tpu=use_tpu,
-    train_batch_size=BATCH_SIZE,
-    eval_batch_size=BATCH_SIZE,
-    predict_batch_size=BATCH_SIZE,
+    train_batch_size=GLOBAL_BATCH_SIZE,
+    eval_batch_size=GLOBAL_BATCH_SIZE,
+    predict_batch_size=GLOBAL_BATCH_SIZE,
     params={
       "data_dir": train_dir,
       "num_classes": problem.num_classes(),
