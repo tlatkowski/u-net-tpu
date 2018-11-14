@@ -1,6 +1,12 @@
 **[Under development]**
 
-### Run U-Net model on TPU Google Cloud Platform 
+# TPU-optimized U-Net model implementation 
+
+### Model description
+This repository contains U-Net model implementation (originally proposed in [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597))
+with usage of Tensoflow TPUEstimators API.
+
+### Training U-Net on Cloud TPU
 
 ##### Config your TPU flock:
 
