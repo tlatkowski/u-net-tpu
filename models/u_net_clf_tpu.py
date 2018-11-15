@@ -33,14 +33,19 @@ def create_model(inputs, params):
   return logits
 
 
+def metric_fn(labels, logits):
+  accuracy = tf.metrics.accuracy(
+    labels=labels, predictions=tf.argmax(logits, axis=1))
+  return {"accuracy": accuracy}
+
+
 def model_fn(features, labels, mode, params):
   image = features
 
+  logits = create_model(image, params)
+  loss = tf.losses.sparse_softmax_cross_entropy(labels=labels,
+                                                logits=logits)
   if mode == tf.estimator.ModeKeys.TRAIN:
-    logits = create_model(image, params)
-    loss = tf.losses.sparse_softmax_cross_entropy(labels=labels,
-                                                  logits=logits)
-
     learning_rate = tf.train.exponential_decay(LEARNING_RATE,
                                                tf.train.get_global_step(),
                                                decay_steps=100000,
@@ -53,6 +58,11 @@ def model_fn(features, labels, mode, params):
       mode=mode,
       loss=loss,
       train_op=distributed_optimizer.minimize(loss, tf.train.get_global_step()))
+
+  if mode == tf.estimator.ModeKeys.EVAL:
+    return tf.contrib.tpu.TPUEstimatorSpec(
+      mode=mode, loss=loss, eval_metrics=(metric_fn, [labels, logits])
+    )
 
   if mode == tf.estimator.ModeKeys.PREDICT:
     logits = create_model(image)
@@ -69,10 +79,8 @@ def model_fn(features, labels, mode, params):
 
 def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, model_dir,
               use_tpu=True):
-
   def train_input_fn(params):
     batch_size = params["batch_size"]
-    data_dir = params["data_dir"]
 
     train_data = problem.train(train_dir)
     logger.info("Number of training images: %s", problem.num_training())
