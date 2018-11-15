@@ -7,11 +7,11 @@ from layers import common_layers
 from layers import unet_layers
 
 LEARNING_RATE = 0.05
-GLOBAL_BATCH_SIZE = 1024
+GLOBAL_BATCH_SIZE = 32
 NUM_EPOCHS = 10
 ITERATIONS = 50
 NUM_SHARDS = 8
-TRAIN_STEPS = 1000
+TRAIN_STEPS = 10000
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -53,6 +53,15 @@ def model_fn(features, labels, mode, params):
 
     optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
     distributed_optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+
+    predictions = tf.argmax(logits, axis=1)
+    accuracy = tf.metrics.accuracy(labels=labels, predictions=predictions)
+
+    tf.identity(LEARNING_RATE, "learning_rate")
+    tf.identity(loss, "cross_entropy")
+    tf.identity(accuracy[1], "train_accuracy")
+
+    tf.summary.scalar('train_accuracy', accuracy[1])
 
     return tf.contrib.tpu.TPUEstimatorSpec(
       mode=mode,
