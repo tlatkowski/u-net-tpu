@@ -76,6 +76,13 @@ python u_net_clf_tpu.py \
 --gcp_project=$GCP_PROJECT
 ```
 
+##### Vizualize model training on Tensorboard
+```bash
+gcloud auth application-default login
+```
 
+```bash
+tensorboard --logdir $MODEL_DIR
+```
 
 
