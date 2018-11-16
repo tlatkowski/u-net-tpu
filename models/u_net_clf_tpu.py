@@ -54,13 +54,14 @@ def model_fn(features, labels, mode, params):
     optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
     distributed_optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
+    train_op = distributed_optimizer.minimize(loss, tf.train.get_global_step())
     logging_hook = tf.train.LoggingTensorHook({"loss": loss}, every_n_iter=10)
 
     return tf.contrib.tpu.TPUEstimatorSpec(
       mode=mode,
       loss=loss,
-      train_op=distributed_optimizer.minimize(loss, tf.train.get_global_step()),
-      training_hooks=logging_hook
+      training_hooks=[logging_hook],
+      train_op=train_op
     )
 
   if mode == tf.estimator.ModeKeys.EVAL:
