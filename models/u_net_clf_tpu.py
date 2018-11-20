@@ -82,13 +82,13 @@ def model_fn(features, labels, mode, params):
                                       })
 
 
-def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, model_dir,
+def run_u_net(dataset, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, model_dir,
               use_tpu=True):
   def train_input_fn(params):
     batch_size = params["batch_size"]
 
-    train_data = problem.train(train_dir)
-    logger.info("Number of training images: %s", problem.num_training())
+    train_data = dataset.train(train_dir)
+    logger.info("Number of training images: %s", dataset.num_training())
 
     ds = train_data.cache().repeat().shuffle(buffer_size=50000).apply(
       tf.contrib.data.batch_and_drop_remainder(batch_size))
@@ -100,8 +100,8 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
   def eval_input_fn(params):
     batch_size = params["batch_size"]
 
-    eval_data = problem.test(eval_dir)
-    logger.info("Number of test images: %s", problem.num_test())
+    eval_data = dataset.test(eval_dir)
+    logger.info("Number of test images: %s", dataset.num_test())
 
     eval_data = eval_data.apply(
       tf.contrib.data.batch_and_drop_remainder(batch_size))
@@ -132,8 +132,8 @@ def run_u_net(problem, train_dir, eval_dir, tpu_name, tpu_zone, gcp_project, mod
     predict_batch_size=GLOBAL_BATCH_SIZE,
     params={
       "data_dir": train_dir,
-      "num_classes": problem.num_classes(),
-      "input_shape": problem.input_shape()
+      "num_classes": dataset.num_classes(),
+      "input_shape": dataset.input_shape()
     },
     config=run_config)
 

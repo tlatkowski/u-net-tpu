@@ -67,27 +67,27 @@ def model_fn(features, labels, mode, params):
       })
 
 
-def run_u_net(problem, train_dir, eval_dir, model_dir):
+def run_u_net(dataset, train_dir, eval_dir, model_dir):
   u_net_model = tf.estimator.Estimator(
     model_fn=model_fn,
     model_dir=model_dir,
     config=None,
     params={
-      "num_classes": problem.num_classes(),
-      "input_shape": problem.input_shape()
+      "num_classes": dataset.num_classes(),
+      "input_shape": dataset.input_shape()
     }
   )
 
   def train_input_fn():
-    train_data = problem.train(train_dir)
-    logger.info("Number of training images: %s", problem.num_training())
+    train_data = dataset.train(train_dir)
+    logger.info("Number of training images: %s", dataset.num_training())
     train_data = train_data.cache().shuffle(buffer_size=50000).batch(
       batch_size=BATCH_SIZE)
     train_data = train_data.repeat(NUM_EPOCHS)
     return train_data
 
   def eval_input_fn():
-    eval_data = problem.test(eval_dir)
+    eval_data = dataset.test(eval_dir)
     eval_data = eval_data.batch(BATCH_SIZE).make_one_shot_iterator().get_next()
     return eval_data
 
